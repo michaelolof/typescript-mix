@@ -16,6 +16,7 @@
     "multiple inheritance in TypeScript"
   ],
   "author": "michaelolof",
+  "repository": "git+https://github.com/michaelolof/typescript-mix.git",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {}
