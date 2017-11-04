@@ -76,7 +76,7 @@ shopper.negotiate(500) // currently negotiating...
 shopper.price // 500
 ```
 
-### What about intellisence support?
+### What about intellisense support?
 We trick typescript by using the inbuilt interface inheritance and declaration merging ability.
 ```
 interface Shopperholic extends Buyer {}
