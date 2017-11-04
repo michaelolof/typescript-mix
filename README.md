@@ -64,7 +64,7 @@ const Buyer: Buyer = {
 Define a concrete class that uses the interface/mixin
 
 ```
-import { use } from "typescript-mix";
+import use from "typescript-mix";
 
 class Shopperholic {
   @use( Buyer ) this
