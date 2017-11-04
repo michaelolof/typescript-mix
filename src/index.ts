@@ -1,6 +1,4 @@
-export type Constructor<T> = new (...args: any[]) => T;
-
-function mix( baseClass: Constructor<any>, mixinObjects: object[] ) {
+function mix( baseClass: any, mixinObjects: object[] ) {
   // We don't want to override methods or properties that are explicitly defined in the base classes.
   const baseClassMethodNames: string[] = Object.getOwnPropertyNames( baseClass.prototype )
   const baseClassMethodsMinusConstructor = baseClassMethodNames.slice( 1, baseClassMethodNames.length ); // Don't mess with the constructor.
