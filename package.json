@@ -1,0 +1,22 @@
+{
+  "name": "typescript-mix",
+  "version": "1.0.0",
+  "description": "A tweaked implementation of TypeScript's default applyMixins(...) idea using ES7 decorators",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "traits in typescript",
+    "use in typescript",
+    "TypeScript Mixins",
+    "Mixins",
+    "applyMixins",
+    "mix",
+    "multiple inheritance in TypeScript"
+  ],
+  "author": "michaelolof",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}
