@@ -1,6 +1,6 @@
 {
   "name": "typescript-mix",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A tweaked implementation of TypeScript's default applyMixins(...) idea using ES7 decorators",
   "main": "dist/index.js",
   "scripts": {
