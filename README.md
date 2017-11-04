@@ -93,7 +93,7 @@ class Shopperholic {
 
 * Mixins take precedence over a super class. i.e. they would override any field or method from a super class with the same name.
 
-* instance variables/fields/properties can be declared or even initialized in your mixins but the library will throw an error if any field is initialized as an object, null or class. This is because the initialization of mixin properties/fields should primarily be the responsibility of the concrete class using it. This easily prevents unwanted bugs. In such situations when you need to define property which is not a primitive type like string, number, or function initialize it as undefined and delegate the actal initialization of that property to the concrete class using the mixin.
+* instance variables/fields/properties can be declared or even initialized in your mixins but the library will throw an error if any field is initialized as an object, null or class. This is because the initialization of mixin properties/fields should primarily be the responsibility of the concrete class using it. This easily prevents unwanted bugs. In such situations when you need to define property which is not a primitive type like string, number, or function initialize it in the mixin as undefined and delegate the actal initialization of that property to the concrete class using the mixin.
 
 
 ## Advantages
