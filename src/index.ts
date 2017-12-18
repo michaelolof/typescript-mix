@@ -1,23 +1,46 @@
-function mix( baseClass: any, mixinObjects: object[] ) {
-  // We don't want to override methods or properties that are explicitly defined in the base classes.
-  const baseClassMethodNames: string[] = Object.getOwnPropertyNames( baseClass.prototype )
-  const baseClassMethodsMinusConstructor = baseClassMethodNames.slice( 1, baseClassMethodNames.length ); // Don't mess with the constructor.
-  const baseClassPropertyNames: string[] = Object.getOwnPropertyNames( new baseClass() )
-  const baseClassNames = [...baseClassPropertyNames, ...baseClassMethodsMinusConstructor ];
-  const mergedMixinObject:object = Object.assign( {}, ...mixinObjects );
-  
-  for(let mixinProp in mergedMixinObject ) {
-    if( baseClassMethodsMinusConstructor.indexOf( mixinProp ) > - 1 ) return
-    const mixinValue = mergedMixinObject[mixinProp];
-    if( !( typeof mixinValue === "string" || typeof mixinValue === "number" || 
-           typeof mixinValue === "function" || typeof mixinValue === "undefined" )) {
-      throw new Error("Defined mixin properties must be either 'string', 'number', 'function', or 'undefined'.\nAvoid declaring mixin properties of complex types like 'objects', 'classes' or 'null'.\nThis ability should be left to the concrete class utilizing the mixin.")
-    }
-    baseClass.prototype[ mixinProp ] = mixinValue;
+export type Constructor<T> = new (...args: any[]) => T;
+export type Mixin<T> = Constructor<T> | object;
+
+function mix( baseClass: Constructor<any>, mixins: Mixin<any>[] ) {
+  const baseClassNames = getClassMethodsWithoutConstructor( baseClass );
+  for( let mixin of mixins ) {
+    const methodNames = getMethodNames( mixin );
+    methodNames.forEach( methodName => {
+      if( baseClassNames.indexOf( methodName ) > - 1 ) return
+      if( typeof mixin === "object" ) {
+        baseClass.prototype[ methodName ] = mixin[ methodName ];
+      } else { 
+        baseClass.prototype[ methodName ] = mixin.prototype[ methodName ];
+      }
+    });
   }
 }
 
-export default function use(...options:object[] ) {
+function getMethodNames(mixin: Mixin<any> ) {
+  let methodNames:string[] = [];
+  switch( typeof mixin ) {
+    case "object":
+      methodNames = getObjectMethods( mixin );
+      break;
+    case "function":
+      methodNames = getClassMethodsWithoutConstructor( mixin as Constructor<any> );
+      break;
+  }
+  return methodNames;
+}
+
+function getObjectMethods(obj:object): string[] {
+  return Object.getOwnPropertyNames( obj ).filter( key => {
+    return obj[key] && (typeof obj[key] === "function");
+  })
+}
+
+function getClassMethodsWithoutConstructor(cls:Constructor<any>): string[] {
+  const baseClassMethodNames: string[] = Object.getOwnPropertyNames( cls.prototype )
+  return baseClassMethodNames.slice( 1, baseClassMethodNames.length ); // Don't mess with the constructor.  
+}
+
+export default function use(...options:Mixin<any>[] ) {
   return function ( target:any, propertyKey:string ) {
     mix( target.constructor, options );
   }
