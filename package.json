@@ -1,8 +1,9 @@
 {
   "name": "typescript-mix",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A tweaked implementation of TypeScript's default applyMixins(...) idea using ES7 decorators",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
