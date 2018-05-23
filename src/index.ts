@@ -45,3 +45,9 @@ export default function use(...options:Mixin<any>[] ) {
     mix( target.constructor, options );
   }
 }
+
+export function delegate( method:(...args:any[])=>any ) {
+  return function(target:any, propertyKey:string) {
+    target.constructor.prototype[ propertyKey ] = method;
+  }
+}

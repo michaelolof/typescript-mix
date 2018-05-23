@@ -43,4 +43,10 @@ function use(...options) {
     };
 }
 exports.default = use;
+function delegate(method) {
+    return function (target, propertyKey) {
+        target.constructor.prototype[propertyKey] = method;
+    };
+}
+exports.delegate = delegate;
 //# sourceMappingURL=index.js.map
