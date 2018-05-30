@@ -39,13 +39,19 @@ function getClassMethodsWithoutConstructor(cls:Constructor<any>): string[] {
   const baseClassMethodNames: string[] = Object.getOwnPropertyNames( cls.prototype )
   return baseClassMethodNames.slice( 1, baseClassMethodNames.length ); // Don't mess with the constructor.  
 }
-
-export default function use(...options:Mixin<any>[] ) {
+/**
+ * Takes a list of classes or object literals and adds their methods
+ * to the class calling it.
+ */
+export function use(...options:Mixin<any>[] ) {
   return function ( target:any, propertyKey:string ) {
-    mix( target.constructor, options );
+    mix( target.constructor, options.reverse() );
   }
 }
 
+/**
+ * Takes a method as a parameter and add it to the class calling it. 
+ */
 export function delegate( method:(...args:any[])=>any ) {
   return function(target:any, propertyKey:string) {
     target.constructor.prototype[ propertyKey ] = method;

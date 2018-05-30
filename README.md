@@ -2,6 +2,12 @@
 
 A tweaked implementation of TypeScript's default applyMixins(...) idea using ES7 decorators. 
 
+## Breaking Changes from Version 3.0.0 upwards
+* New decorator @delegate introduced
+* Changes made in how multiple mixins implementing the same method are mixed
+
+See [Breaking Changes Explained](#breaking-changes-explained)
+
 ## Dependencies
    * TypeScript
    * ES7 Decorators
@@ -12,9 +18,8 @@ A tweaked implementation of TypeScript's default applyMixins(...) idea using ES7
 npm install --save typescript-mix
 ```
 
-## New Changes.
-
-  * Properties on mixins are no longer considered. 
+## Features.
+  * Properties in a mixin are not mixed into the client. They are ignored. See [TypeScript Mix — Yet Another Mixin Library](https://medium.com/@michaelolof/typescript-mix-yet-another-mixin-library-29c7a349b47d) for a detailed explanation. 
   * Classes and Object Literals can be used as mixins.
 
 
@@ -25,6 +30,7 @@ npm install --save typescript-mix
    * Create simple mixins that implement that interface
 
    * Provide an intuitive and readable way of using such mixins in a concrete class.
+
 
 
 ## Why I wrote yet another Mixin Library.
@@ -115,3 +121,13 @@ class Shopperholic {
 ## Advantages
    * Inheritance still works, (multiple inheritance still works).
 
+## <a name="breaking-changes-explained">Breaking Changes Explained</a>
+### The delegate decorator
+The addition of the delegate decorator now means module is imported as:
+```
+import { use, delegate } from "typescript-mix"
+```
+
+### Multiple Mixins with the same method.
+Consider the following piece of code.
+![alt text]()

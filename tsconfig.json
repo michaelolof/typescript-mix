@@ -9,12 +9,12 @@
     "experimentalDecorators": true,
     "outDir": "dist",
     "noImplicitAny": false,
-    "rootDir": "./src"
+    "rootDir": "."
   },
   "exclude": [
     "node_modules",
     "build",
-    "test",
+    // "test",
     "dist"
   ]
 }
