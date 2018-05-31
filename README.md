@@ -18,8 +18,8 @@ See [Breaking Changes Explained](#breaking-changes-explained)
 npm install --save typescript-mix
 ```
 
-## Features.
-  * Properties in a mixin are not mixed into the client. They are ignored. See [TypeScript Mix — Yet Another Mixin Library](https://medium.com/@michaelolof/typescript-mix-yet-another-mixin-library-29c7a349b47d) for a detailed explanation. 
+## Features
+  * Properties in a mixin are not mixed into the client. They are ignored. See [TypeScript Mix — Yet Another Mixin Library](https://medium.com/@michaelolof/typescript-mix-yet-another-mixin-library-29c7a349b47d) for a detailed explanation on why. 
   * Classes and Object Literals can be used as mixins.
 
 
@@ -35,12 +35,14 @@ npm install --save typescript-mix
 
 ## Why I wrote yet another Mixin Library.
 
-The mixin pattern is somewhat a popular pattern amongst JavaScript/TypeScript devs as it gives the power of "mixin in" additional functionality to a class. The official way of using mixins as declared by Microsoft in TypeScript can be really verbose and downright unreadable.
+The mixin pattern is somewhat a popular pattern amongst JavaScript/TypeScript devs as it gives the power of "mixin in" additional functionality to a class. The official way of using mixins as declared by Microsoft in TypeScript can be really verbose to downright unreadable.
 
 
 ## How to use
 
-Program to an interface.
+### The 'use' decorator
+
+#### Program to an interface.
 
 ```
 interface Buyer {
@@ -70,7 +72,7 @@ Define another mixin this time using a Class declaration.
 class Transportable {
   distance:number;
   transport() {
-    console.log(`moved ${distance}km.`);
+    console.log(`moved ${this.distance}km.`);
   }
 }
 ```
@@ -95,7 +97,7 @@ shopper.price // 500
 shopper.transport() // moved 140km
 ```
 
-### What about intellisense support?
+#### What about intellisense support?
 We trick typescript by using the inbuilt interface inheritance and declaration merging ability.
 ```
 interface Shopperholic extends Buyer, Transportable {}
@@ -108,18 +110,44 @@ class Shopperholic {
 }
 ```
 
-### Things to note about this library?
+### The 'delegate' decorator
+The delegate decorator is useful when we want specific functionality mixed into the client.
+```
+class OtherClass {
+  simpleMethod() {
+    console.log("This method has no dependencies");
+  }
+}
+
+function workItOut() {
+  console.log("I am working it out.")
+}
+
+class MyClass {
+  @delegate( OtherClass.prototype.simpleMethod )
+  simpleMethod:() => void
+
+  @delegate( workItOut ) workItOut:() => void
+}
+
+const cls = new MyClass();
+cls.simpleMethod() // This method has no dependencies
+cls.workItOut() // I am working it out
+```
+
+
+## Things to note about this library?
 * using the 'use' decorator mutates the class prototype. This doesn't depend on inheritance (But if you use mixins correctly, you should be fine)
 
-* mixins don't override already declared methods of fields in the concrete class using them.
+* mixins don't override already declared methods or fields in the concrete class using them.
 
 * Mixins take precedence over a super class. i.e. they would override any field or method from a super class with the same name.
 
-* instance variables/fields/properties can be declared or even initialized in your mixins. This is necessary if you're defining methods that depend on object or class properties but note these properties won't be mixed-in to the base class so you have to redefine or redeclare those properties in the base class using the mixin.
+* instance variables/fields/properties can be declared or even initialized in your mixins. This is necessary if you're defining methods that depend on object or class properties but these properties won't be mixed-in to the base class so you have to redefine those properties in the base class using the mixin.
 
 
 ## Advantages
-   * Inheritance still works, (multiple inheritance still works).
+   * The Library is non-obtrusive. Inheritance still works, (multiple inheritance still works ('Real Mixins Style')).
 
 ## <a name="breaking-changes-explained">Breaking Changes Explained</a>
 ### The delegate decorator
