@@ -165,4 +165,4 @@ One advantage of extending interfaces as we've defined above is that we're essen
 
 ![alt text](https://github.com/michaelolof/typescript-mix/blob/master/imgs/2018-05-30%2021_49_13-final.ts%20-%20typescript-mix%20-%20Visual%20Studio%20Code.png?raw=true)
 
-Notice that TypeScript's intellisense calls MixinOne.mixIt() method. I believe its more intuitive, so we stick to this.
+Notice that TypeScript's intellisense calls MixinOne.mixIt() method. Therefore to be consistent with TypeScript and avoid confusion the '@use' decorator also implements MixinOne.mixIt() method.
