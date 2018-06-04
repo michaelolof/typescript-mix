@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function mix(client, mixins) {
-    const clientKeys = Object.getOwnPropertyNames(client.prototype);
-    for (let mixin of mixins) {
-        const mixinMixables = getMixables(clientKeys, mixin);
+    var clientKeys = Object.getOwnPropertyNames(client.prototype);
+    for (var _i = 0, mixins_1 = mixins; _i < mixins_1.length; _i++) {
+        var mixin = mixins_1[_i];
+        var mixinMixables = getMixables(clientKeys, mixin);
         Object.defineProperties(client.prototype, mixinMixables);
     }
 }
@@ -11,7 +12,7 @@ function mix(client, mixins) {
  * Returns a map of mixables. That is things that can be mixed in
  */
 function getMixables(clientKeys, mixin) {
-    let descriptors = {};
+    var descriptors = {};
     switch (typeof mixin) {
         case "object":
             descriptors = getMixables(mixin);
@@ -22,11 +23,13 @@ function getMixables(clientKeys, mixin) {
     }
     return descriptors;
     function getMixables(obj) {
-        const map = {};
-        Object.getOwnPropertyNames(obj).map(key => {
+        var map = {};
+        Object.getOwnPropertyNames(obj).map(function (key) {
             if (clientKeys.indexOf(key) < 0) {
-                const descriptor = Object.getOwnPropertyDescriptor(obj, key);
-                if (descriptor.get) {
+                var descriptor = Object.getOwnPropertyDescriptor(obj, key);
+                if (descriptor === undefined)
+                    return;
+                if (descriptor.get || descriptor.set) {
                     map[key] = descriptor;
                 }
                 else if (typeof descriptor.value === "function") {
@@ -41,7 +44,11 @@ function getMixables(clientKeys, mixin) {
  * Takes a list of classes or object literals and adds their methods
  * to the class calling it.
  */
-function use(...options) {
+function use() {
+    var options = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        options[_i] = arguments[_i];
+    }
     return function (target, propertyKey) {
         mix(target.constructor, options.reverse());
     };
