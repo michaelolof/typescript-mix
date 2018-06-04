@@ -1,48 +1,55 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function mix(baseClass, mixins) {
-    const baseClassNames = getClassMethodsWithoutConstructor(baseClass);
+function mix(client, mixins) {
+    const clientKeys = Object.getOwnPropertyNames(client.prototype);
     for (let mixin of mixins) {
-        const methodNames = getMethodNames(mixin);
-        methodNames.forEach(methodName => {
-            if (baseClassNames.indexOf(methodName) > -1)
-                return;
-            if (typeof mixin === "object") {
-                baseClass.prototype[methodName] = mixin[methodName];
-            }
-            else {
-                baseClass.prototype[methodName] = mixin.prototype[methodName];
-            }
-        });
+        const mixinMixables = getMixables(clientKeys, mixin);
+        Object.defineProperties(client.prototype, mixinMixables);
     }
 }
-function getMethodNames(mixin) {
-    let methodNames = [];
+/**
+ * Returns a map of mixables. That is things that can be mixed in
+ */
+function getMixables(clientKeys, mixin) {
+    let descriptors = {};
     switch (typeof mixin) {
         case "object":
-            methodNames = getObjectMethods(mixin);
+            descriptors = getMixables(mixin);
             break;
         case "function":
-            methodNames = getClassMethodsWithoutConstructor(mixin);
+            descriptors = getMixables(mixin.prototype);
             break;
     }
-    return methodNames;
+    return descriptors;
+    function getMixables(obj) {
+        const map = {};
+        Object.getOwnPropertyNames(obj).map(key => {
+            if (clientKeys.indexOf(key) < 0) {
+                const descriptor = Object.getOwnPropertyDescriptor(obj, key);
+                if (descriptor.get) {
+                    map[key] = descriptor;
+                }
+                else if (typeof descriptor.value === "function") {
+                    map[key] = descriptor;
+                }
+            }
+        });
+        return map;
+    }
 }
-function getObjectMethods(obj) {
-    return Object.getOwnPropertyNames(obj).filter(key => {
-        return obj[key] && (typeof obj[key] === "function");
-    });
-}
-function getClassMethodsWithoutConstructor(cls) {
-    const baseClassMethodNames = Object.getOwnPropertyNames(cls.prototype);
-    return baseClassMethodNames.slice(1, baseClassMethodNames.length); // Don't mess with the constructor.  
-}
+/**
+ * Takes a list of classes or object literals and adds their methods
+ * to the class calling it.
+ */
 function use(...options) {
     return function (target, propertyKey) {
-        mix(target.constructor, options);
+        mix(target.constructor, options.reverse());
     };
 }
-exports.default = use;
+exports.use = use;
+/**
+ * Takes a method as a parameter and add it to the class calling it.
+ */
 function delegate(method) {
     return function (target, propertyKey) {
         target.constructor.prototype[propertyKey] = method;

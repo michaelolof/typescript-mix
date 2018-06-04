@@ -1,59 +1,63 @@
 export type Constructor<T> = new (...args: any[]) => T;
 export type Mixin<T> = Constructor<T> | object;
 
-function mix( baseClass: Constructor<any>, mixins: Mixin<any>[] ) {
-  const baseClassNames = getClassMethodsWithoutConstructor( baseClass );
-  for( let mixin of mixins ) {
-    const methodNames = getMethodNames( mixin );
-    methodNames.forEach( methodName => {
-      if( baseClassNames.indexOf( methodName ) > - 1 ) return
-      if( typeof mixin === "object" ) {
-        baseClass.prototype[ methodName ] = mixin[ methodName ];
-      } else { 
-        baseClass.prototype[ methodName ] = mixin.prototype[ methodName ];
-      }
-    });
+function mix(client: Constructor<any>, mixins: Mixin<any>[]) {
+  const clientKeys = Object.getOwnPropertyNames( client.prototype );
+  for (let mixin of mixins) {
+    const mixinMixables = getMixables(clientKeys, mixin);
+    Object.defineProperties( client.prototype, mixinMixables );
   }
 }
 
-function getMethodNames(mixin: Mixin<any> ) {
-  let methodNames:string[] = [];
-  switch( typeof mixin ) {
+/**
+ * Returns a map of mixables. That is things that can be mixed in
+ */
+function getMixables(clientKeys:string[], mixin: Mixin<any>) {
+  let descriptors:PropertyDescriptorMap = {};
+  switch (typeof mixin) {
     case "object":
-      methodNames = getObjectMethods( mixin );
+      descriptors = getMixables(mixin);
       break;
     case "function":
-      methodNames = getClassMethodsWithoutConstructor( mixin as Constructor<any> );
+      descriptors = getMixables((mixin as Constructor<any>).prototype);
       break;
   }
-  return methodNames;
+  return descriptors;
+
+  function getMixables(obj:object):PropertyDescriptorMap {
+    const map:PropertyDescriptorMap = {};
+    Object.getOwnPropertyNames( obj ).map( key => {
+      if( clientKeys.indexOf( key ) < 0 ) {
+        const descriptor = Object.getOwnPropertyDescriptor( obj, key );
+        if( descriptor.get ) {
+          map[ key ] = descriptor;
+        }
+        else 
+        if ( typeof descriptor.value === "function" ) {
+          map[ key ] = descriptor;
+        }
+      }
+    })
+    return map;
+  }
+  
 }
 
-function getObjectMethods(obj:object): string[] {
-  return Object.getOwnPropertyNames( obj ).filter( key => {
-    return obj[key] && (typeof obj[key] === "function");
-  })
-}
-
-function getClassMethodsWithoutConstructor(cls:Constructor<any>): string[] {
-  const baseClassMethodNames: string[] = Object.getOwnPropertyNames( cls.prototype )
-  return baseClassMethodNames.slice( 1, baseClassMethodNames.length ); // Don't mess with the constructor.  
-}
 /**
  * Takes a list of classes or object literals and adds their methods
  * to the class calling it.
  */
-export function use(...options:Mixin<any>[] ) {
-  return function ( target:any, propertyKey:string ) {
-    mix( target.constructor, options.reverse() );
+export function use(...options: Mixin<any>[]) {
+  return function (target: any, propertyKey: string) {
+    mix(target.constructor, options.reverse());
   }
 }
 
 /**
  * Takes a method as a parameter and add it to the class calling it. 
  */
-export function delegate( method:(...args:any[])=>any ) {
-  return function(target:any, propertyKey:string) {
-    target.constructor.prototype[ propertyKey ] = method;
+export function delegate(method: (...args: any[]) => any) {
+  return function (target: any, propertyKey: string) {
+    target.constructor.prototype[propertyKey] = method;
   }
 }
