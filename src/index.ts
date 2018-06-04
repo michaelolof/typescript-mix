@@ -29,7 +29,8 @@ function getMixables(clientKeys:string[], mixin: Mixin<any>) {
     Object.getOwnPropertyNames( obj ).map( key => {
       if( clientKeys.indexOf( key ) < 0 ) {
         const descriptor = Object.getOwnPropertyDescriptor( obj, key );
-        if( descriptor.get ) {
+        if( descriptor === undefined ) return
+        if( descriptor.get || descriptor.set ) {
           map[ key ] = descriptor;
         }
         else 
